@@ -127,3 +127,5 @@ async function updateListingByName(client,nameOfListing,updatedListing){
     console.log(`${result.matchedCount} document(s) matched the query criteria.`)
     console.log(`${result.modifiedCount} document(s) was/were updated.`)
 } 
+
+//upsert()
