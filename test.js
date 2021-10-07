@@ -50,7 +50,11 @@ async function run() {
 
         // await updateAllListingsToHavePropertyType(client)
 
-        await deleteListingByName(client,"xiaoming3")
+        // await deleteListingByName(client, "xiaoming3")
+
+        // await deleteListingsScrapedBeforeDate(client,new Date("2019-02-15"));
+
+        await deleteListings(client)
 
     } catch (err) {
         console.error(err)
@@ -151,8 +155,22 @@ async function updateAllListingsToHavePropertyType(client) {
 }
 
 //deleteOne()
-async function deleteListingByName(client,nameOfListing){
-    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteOne({ name:nameOfListing})
+async function deleteListingByName(client, nameOfListing) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteOne({ name: nameOfListing })
 
+    console.log(`${result.deletedCount} document(s) was/were deleted.`)
+}
+
+//deleteMany()
+async function deleteListingsScrapedBeforeDate(client, date) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteMany(
+        {"last_scraped": { $lt: date }}
+    )
+    console.log(`${result.deletedCount} document(s) was/were deleted.`)
+}
+async function deleteListings(client) {
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteMany(
+        {"property_type":"Unknow"}
+    )
     console.log(`${result.deletedCount} document(s) was/were deleted.`)
 }
