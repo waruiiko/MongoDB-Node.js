@@ -48,7 +48,9 @@ async function run() {
 
         // await upsertListingByName(client, "xiaoming3", { bedrooms: 2, bed_type: "Real Beds", property_type: "House" })
 
-        await updateAllListingsToHavePropertyType(client)
+        // await updateAllListingsToHavePropertyType(client)
+
+        await deleteListingByName(client,"xiaoming3")
 
     } catch (err) {
         console.error(err)
@@ -146,4 +148,11 @@ async function updateAllListingsToHavePropertyType(client) {
 
     console.log(`${result.matchedCount} document(s) matched the query criteria.`)
     console.log(`${result.modifiedCount} document(s) was/were updated.`);
+}
+
+//deleteOne()
+async function deleteListingByName(client,nameOfListing){
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").deleteOne({ name:nameOfListing})
+
+    console.log(`${result.deletedCount} document(s) was/were deleted.`)
 }
