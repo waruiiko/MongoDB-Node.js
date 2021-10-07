@@ -44,7 +44,9 @@ async function run() {
         //     maximumNumberOfResults:5
         // })
 
-        await updateListingByName(client,"xiaoming3",{bedrooms:2,bed_type:"Real Beds"})
+        // await updateListingByName(client,"xiaoming3",{bedrooms:2,bed_type:"Real Beds"})
+
+        await upsertListingByName(client,"xiaoming3",{bedrooms:2,bed_type:"Real Beds",property_type:"House"})
 
     } catch(err) {
         console.error(err)
@@ -129,3 +131,9 @@ async function updateListingByName(client,nameOfListing,updatedListing){
 } 
 
 //upsert()
+async function upsertListingByName(client,nameOfListing,updatedListing){
+    const result = await client.db("sample_airbnb").collection("listingsAndReviews").updateOne({name:nameOfListing},{$set:updatedListing},{upsert:true});
+
+    console.log(`${result.matchedCount} document(s) matched the query criteria.`)
+    console.log(`${result.modifiedCount} document(s) was/were upserted.`)
+} 
