@@ -72,22 +72,26 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
             // Important:: You must pass the session to each of the operations   
 
             // Update the inventory to reflect the book has been sold
-            const updateInventoryResults = await inventoryCollection.updateOne(
-                { _id: bookId },
-                { $inc: { numberInStock: quantity * -1 } },
+            const usersUpdateResults = await inventoryCollection.updateOne(
+                { email: userEmail },
+                { $addToSet: { reservations: reservation } },
                 { session });
-            console.log(`${updateInventoryResults.matchedCount} document(s) found in the inventory collection with _id ${bookId}.`);
-            console.log(`${updateInventoryResults.modifiedCount} document(s) was/were updated.`);
-            if (updateInventoryResults.modifiedCount !== 1) {
+            console.log(`${usersUpdateResults.matchedCount} document(s) found in the inventory collection with the email address ${userEmail}.`);
+            console.log(`${usersUpdateResults.modifiedCount} document(s) was/were updated to include the reservation.`);
+            if (usersUpdateResults.modifiedCount) {
                 await session.abortTransaction();
                 return;
             }
 
-            // Record the order in the orders collection
-            const insertOrderResults = await ordersCollection.insertOne(
-                { "userId": userId , bookId: bookId, quantity: quantity, status: status },
-                { session });
-            console.log(`New order recorded with the following id: ${insertOrderResults.insertedId}`);
+            const isListingReservedResults = await listingsAndReviewsCollection.findOne(
+                {name:nameOfListing,dateReserved:{$in:reservationDates}},{session}
+            )
+
+            // // Record the order in the orders collection
+            // const insertOrderResults = await ordersCollection.insertOne(
+            //     { "userId": userId , bookId: bookId, quantity: quantity, status: status },
+            //     { session });
+            // console.log(`New order recorded with the following id: ${insertOrderResults.insertedId}`);
 
         }, transactionOptions);
 
