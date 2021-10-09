@@ -86,7 +86,22 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
             const isListingReservedResults = await listingsAndReviewsCollection.findOne(
                 {name:nameOfListing,dateReserved:{$in:reservationDates}},{session}
             )
+            
+            if(isListingReservedResults){
+                await session.abortTransaction();
+                console.error("This listing is already reserved for at least one of the given dates. The reservation could not be created.")
+                console.error("Any operations that already occurred as part of this transaction will be rolled back.")
+                return;
+            }
 
+            const listingsAndReviewsUpdateResults = await listingsAndReviewsCollection.updateOne(
+                {name:nameOfListing},
+                {$addToSet:{datesReerved:{$each:reservationDates}}},
+                {session}
+            )
+
+            console.log(`${listingsAndReviewsUpdateResults.matchedCount} document(s) found in the listingsAndReviews collection with the name ${nameOfListing}`);
+            console.log(`${listingsAndReviewsUpdateResults.modifiedCount} document(s) was/were updated to include the reservation dates.`)
             // // Record the order in the orders collection
             // const insertOrderResults = await ordersCollection.insertOne(
             //     { "userId": userId , bookId: bookId, quantity: quantity, status: status },
