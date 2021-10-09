@@ -9,6 +9,14 @@ const client = new MongoClient(uri);
 async function run() {
     try {
         await client.connect();
+
+        console.log(
+            createReservationDocument(
+                "Infinite Views",
+                [new Date("2021-12-31"), new Date("2022-01-01")],
+                { pricePerNight: 180, specialRequests: "Late checkout", breakfastIncluded: true }
+            )
+        )
     } catch (err) {
         console.error(err)
     } finally {
@@ -27,4 +35,6 @@ function createReservationDocument(nameOfListing, reservationDates, reservationD
     for (let detail in reservationDetails) {
         reservation[detail] = reservationDetails[detail]
     }
+
+    return reservation;
 }
