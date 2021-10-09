@@ -89,7 +89,7 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
 
             const isListingReservedResults = await listingsAndReviewsCollection.findOne(
                 { name: nameOfListing, datesReserved: { $in: reservationDates } }, { session }
-            )
+            );
 
             if (isListingReservedResults) {
                 await session.abortTransaction();
