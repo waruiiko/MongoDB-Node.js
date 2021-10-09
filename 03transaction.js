@@ -88,7 +88,7 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
             console.log(`${usersUpdateResults.modifiedCount} document(s) was/were updated to include the reservation.`);
 
             const isListingReservedResults = await listingsAndReviewsCollection.findOne(
-                { name: nameOfListing, dateReserved: { $in: reservationDates } }, { session }
+                { name: nameOfListing, datesReserved: { $in: reservationDates } }, { session }
             )
 
             if (isListingReservedResults) {
