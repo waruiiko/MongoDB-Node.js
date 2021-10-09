@@ -9,13 +9,21 @@ async function run() {
     try {
         await client.connect();
 
-        console.log(
-            createReservationDocument(
-                "Infinite Views",
-                [new Date("2021-12-31"), new Date("2022-01-01")],
-                { pricePerNight: 180, specialRequests: "Late checkout", breakfastIncluded: true }
-            )
+        // console.log(
+        //     createReservationDocument(
+        //         "Infinite Views",
+        //         [new Date("2021-12-31"), new Date("2022-01-01")],
+        //         { pricePerNight: 180, specialRequests: "Late checkout", breakfastIncluded: true }
+        //     )
+        // )
+
+        await createReservation(client,
+            "xiaomingbian@example.com",
+            "Infinite Views",
+            [new Date("2021-12-31"), new Date("2022-01-01")],
+            { pricePerNight: 180, specialRequests: "Late checkout", breakfastIncluded: true }
         )
+
     } catch (err) {
         console.error(err)
     } finally {
@@ -49,7 +57,7 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
      * The inventory collection in the book-store database
      */
     const listingsAndReviewsCollection = client.db("sample_airbnb").collection("listingsAndReviews");
- 
+
     const reservation = createReservationDocument(nameOfListing, reservationDates, reservationDetails);
 
     // Step 1: Start a Client Session
@@ -72,22 +80,22 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
             // Important:: You must pass the session to each of the operations   
 
             // Update the inventory to reflect the book has been sold
-            const usersUpdateResults = await inventoryCollection.updateOne(
+            const usersUpdateResults = await usersCollection.updateOne(
                 { email: userEmail },
                 { $addToSet: { reservations: reservation } },
                 { session });
             console.log(`${usersUpdateResults.matchedCount} document(s) found in the inventory collection with the email address ${userEmail}.`);
             console.log(`${usersUpdateResults.modifiedCount} document(s) was/were updated to include the reservation.`);
-            if (usersUpdateResults.modifiedCount) {
-                await session.abortTransaction();
-                return;
-            }
+            // if (usersUpdateResults.modifiedCount) {
+            //     await session.abortTransaction();
+            //     return;
+            // }
 
             const isListingReservedResults = await listingsAndReviewsCollection.findOne(
-                {name:nameOfListing,dateReserved:{$in:reservationDates}},{session}
+                { name: nameOfListing, dateReserved: { $in: reservationDates } }, { session }
             )
-            
-            if(isListingReservedResults){
+
+            if (isListingReservedResults) {
                 await session.abortTransaction();
                 console.error("This listing is already reserved for at least one of the given dates. The reservation could not be created.")
                 console.error("Any operations that already occurred as part of this transaction will be rolled back.")
@@ -95,23 +103,18 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
             }
 
             const listingsAndReviewsUpdateResults = await listingsAndReviewsCollection.updateOne(
-                {name:nameOfListing},
-                {$addToSet:{datesReerved:{$each:reservationDates}}},
-                {session}
+                { name: nameOfListing },
+                { $addToSet: { datesReerved: { $each: reservationDates } } },
+                { session }
             )
 
             console.log(`${listingsAndReviewsUpdateResults.matchedCount} document(s) found in the listingsAndReviews collection with the name ${nameOfListing}`);
             console.log(`${listingsAndReviewsUpdateResults.modifiedCount} document(s) was/were updated to include the reservation dates.`)
-            // // Record the order in the orders collection
-            // const insertOrderResults = await ordersCollection.insertOne(
-            //     { "userId": userId , bookId: bookId, quantity: quantity, status: status },
-            //     { session });
-            // console.log(`New order recorded with the following id: ${insertOrderResults.insertedId}`);
 
         }, transactionOptions);
 
         if (transactionResults) {
-            console.log("The order was successfully processed. Database operations from the transaction are now visible outside the transaction.");
+            console.log("The reservation was successfully created. Database operations from the transaction are now visible outside the transaction.");
         } else {
             console.log("The order was not successful. The transaction was intentionally aborted.");
         }
