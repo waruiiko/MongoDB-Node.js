@@ -1,5 +1,4 @@
 import { MongoClient } from 'mongodb';
-// const uri = "localhost:27017";
 const uri = "mongodb+srv://m001-student:m001-mongodb-basics@sandbox.yiyle.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 
