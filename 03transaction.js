@@ -38,17 +38,19 @@ function createReservationDocument(nameOfListing, reservationDates, reservationD
     return reservation;
 }
 
-async function purchaseBook(client, userId, bookId, quantity, status) {
+async function createReservation(client, userEmail, nameOfListing, reservationDates, reservationDetails) {
 
     /**
      * The orders collection in the book-store database
      */
-    const ordersCollection = client.db("book-store").collection("orders");
+    const usersCollection = client.db("sample_airbnb").collection("users");
 
     /**
      * The inventory collection in the book-store database
      */
-     const inventoryCollection = client.db("book-store").collection("inventory");
+    const listingsAndReviewsCollection = client.db("sample_airbnb").collection("listingsAndReviews");
+ 
+    const reservation = createReservationDocument(nameOfListing, reservationDates, reservationDetails);
 
     // Step 1: Start a Client Session
     // See https://mongodb.github.io/node-mongodb-native/3.6/api/MongoClient.html#startSession for the startSession() docs
