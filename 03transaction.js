@@ -86,10 +86,6 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
                 { session });
             console.log(`${usersUpdateResults.matchedCount} document(s) found in the inventory collection with the email address ${userEmail}.`);
             console.log(`${usersUpdateResults.modifiedCount} document(s) was/were updated to include the reservation.`);
-            // if (usersUpdateResults.modifiedCount) {
-            //     await session.abortTransaction();
-            //     return;
-            // }
 
             const isListingReservedResults = await listingsAndReviewsCollection.findOne(
                 { name: nameOfListing, dateReserved: { $in: reservationDates } }, { session }
@@ -104,7 +100,7 @@ async function createReservation(client, userEmail, nameOfListing, reservationDa
 
             const listingsAndReviewsUpdateResults = await listingsAndReviewsCollection.updateOne(
                 { name: nameOfListing },
-                { $addToSet: { datesReerved: { $each: reservationDates } } },
+                { $addToSet: { datesReserved: { $each: reservationDates } } },
                 { session }
             )
 
