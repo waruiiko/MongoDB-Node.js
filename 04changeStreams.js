@@ -23,8 +23,18 @@ async function main() {
         // Connect to the MongoDB cluster
         await client.connect();
 
+        const pipeline = [
+            {
+                '$match': {
+                    'operationType': 'insert',
+                    'fullDocument.address.country': 'Australia',
+                    'fullDocument.address.market': 'Sydney'
+                },
+            }
+        ];
+
         // Make the appropriate DB calls
-        await monitorListingsUsingEventEmitter(client,15000);
+        await monitorListingsUsingEventEmitter(client,15000,pipeline);
 
     } finally {
         // Close the connection to the MongoDB cluster
