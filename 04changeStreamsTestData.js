@@ -1,4 +1,5 @@
 // https://www.mongodb.com/developer/quickstart/nodejs-change-streams-triggers/
+//connect with 04changeStreams.js
 
 /**
  * This script can be used to create, update, and delete sample data.

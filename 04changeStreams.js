@@ -1,4 +1,5 @@
 // https://www.mongodb.com/developer/quickstart/nodejs-change-streams-triggers/
+//connect with 04changeStreamsTestData.js
 
 import { MongoClient } from 'mongodb';
 
@@ -23,7 +24,7 @@ async function main() {
         await client.connect();
 
         // Make the appropriate DB calls
-        await monitorListingsUsingEventEmitter(client);
+        await monitorListingsUsingEventEmitter(client,15000);
 
     } finally {
         // Close the connection to the MongoDB cluster
