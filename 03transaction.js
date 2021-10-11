@@ -1,8 +1,8 @@
 //Transaction
 //ACID:Atomicity原子性 Consistency一致性 Isolation隔离性 Durability持久性
 //https://www.mongodb.com/developer/quickstart/node-transactions/
-
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
+// import { MongoClient } from 'mongodb';
 const uri = "mongodb+srv://m001-student:m001-mongodb-basics@sandbox.yiyle.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 

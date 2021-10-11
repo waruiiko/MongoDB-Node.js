@@ -5,7 +5,8 @@
  * This script can be used to create, update, and delete sample data.
  * This script is especially helpful when testing change streams.
  */
- import { MongoClient } from 'mongodb';
+//  import { MongoClient } from 'mongodb';
+ const { MongoClient } = require('mongodb');
 
  async function main() {
      /**

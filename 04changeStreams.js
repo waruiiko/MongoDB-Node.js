@@ -1,7 +1,9 @@
 // https://www.mongodb.com/developer/quickstart/nodejs-change-streams-triggers/
 //connect with 04changeStreamsTestData.js
+const { MongoClient } = require('mongodb');
+// import { MongoClient } from 'mongodb';
 
-import { MongoClient } from 'mongodb';
+const stream = require('stream');
 
 async function main() {
     /**
@@ -36,7 +38,9 @@ async function main() {
         // Make the appropriate DB calls
         // await monitorListingsUsingEventEmitter(client,15000,pipeline);
 
-        await monitorListingsUsingHasNext(client,15000,pipeline);
+        // await monitorListingsUsingHasNext(client, 15000, pipeline);
+
+        await monitorListingsUsingStreamAPI(client);
 
     } finally {
         // Close the connection to the MongoDB cluster
@@ -79,13 +83,31 @@ async function monitorListingsUsingHasNext(client, timeInMs = 60000, pipeline = 
 
     try {
         while (await changeStream.hasNext()) {
-           console.log(await changeStream.next());
+            console.log(await changeStream.next());
         }
-     } catch (error) {
+    } catch (error) {
         if (changeStream.isClosed()) {
-           console.log("The change stream is closed. Will not wait on any more changes.")
+            console.log("The change stream is closed. Will not wait on any more changes.")
         } else {
-           throw error;
-       }
+            throw error;
+        }
     }
+}
+
+//using Node's Stream API
+async function monitorListingsUsingStreamAPI(client, timeInMs = 60000, pipeline = []) {
+    const collection = client.db("sample_airbnb").collection("listingsAndReviews");
+    const changeStream = collection.watch(pipeline);
+
+    changeStream.stream().pipe(
+        new stream.Writable({
+            objectMode: true,
+            write: function (doc, _, cb) {
+                console.log(doc);
+                cb();
+            }
+        })
+    );
+
+    await closeChangeStream(timeInMs,changeStream)
 }

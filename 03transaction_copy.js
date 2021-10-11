@@ -1,5 +1,5 @@
-import { MongoClient } from 'mongodb';
-
+// import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 // In MongoDB 4.2 and earlier, CRUD operations in transactions must be on existing collections 
 // See https://docs.mongodb.com/manual/core/transactions/#transactions-api for more information
 // Be sure you have run usersCollection.js prior to running this script
