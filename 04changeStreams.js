@@ -40,7 +40,7 @@ async function main() {
 
         // await monitorListingsUsingHasNext(client, 15000, pipeline);
 
-        await monitorListingsUsingStreamAPI(client);
+        await monitorListingsUsingStreamAPI(client,15000, pipeline);
 
     } finally {
         // Close the connection to the MongoDB cluster
